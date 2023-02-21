@@ -13,7 +13,8 @@ import ButtonWithIcon from '../components/ButtonWithIcon';
 import Chart from '../components/Chart';
 import MainLayout from '../components/MainLayout';
 import { COLORS, FONTS, icons } from '../constants';
-import { callApi } from '../redux/coinSlice';
+import CoinList from '../constants/CoinList';
+import { myHoldingsApi } from '../redux/holdingSlice';
 
 interface propType {
 
@@ -21,11 +22,12 @@ interface propType {
 interface walletViewProps {
 
 }
+
 interface rootState {
-    coinList: {
+    holdingList: {
         status: string,
         error: null | string,
-        data: Array<Object>
+        holdings: Array<Object>
     }
 }
 
@@ -45,7 +47,7 @@ const WalletView: React.FC<walletViewProps> = () => {
                     marginRight: 5
                 }} resizeMode={"contain"} />
                 <Text style={{ ...styles.tx, }}>-30.56%</Text>
-                <Text style={{ ...styles.tx, marginLeft: 10 }}>7d change</Text>
+                <Text style={{ ...styles.tx, marginLeft: 10 }}>7d change</Text> 
             </View>
 
             {/* button view  */}
@@ -63,14 +65,14 @@ const WalletView: React.FC<walletViewProps> = () => {
 const Home: React.FC<propType> = () => {
 
     const dispatch = useDispatch()
-    const { coinList } = useSelector((s: rootState) => s)
-    // console.log("coinList", coinList)
+    const { holdingList } = useSelector((s: rootState) => s)
+    // console.log("holdingList", holdingList)
     function getData() {
-        if (coinList.status == "idle") {
-            dispatch(callApi())
+        if (holdingList.status == "idle") {
+            dispatch(myHoldingsApi())
         } else {
-            // Alert.alert("updated")
-        }
+            
+        }      
     }
 
 
@@ -87,12 +89,15 @@ const Home: React.FC<propType> = () => {
                 <WalletView />
 
                 {/* chart */}
-                <Chart data={coinList?.data[0]?.sparkline_in_7d?.price} />
+                <Chart data={holdingList?.holdings[0]?.sparkline_in_7d?.price} />
+
                 {/* coin data list */}
+
+                <CoinList />
+
 
                 <View>
                     <Text>Top Currency</Text>
-
                 </View>
             </View>
         </MainLayout>

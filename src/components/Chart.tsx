@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Dimensions } from 'react-native'
 import React from 'react'
 import { monotoneCubicInterpolation, ChartPath, ChartPathProvider, ChartDot, ChartXLabel, ChartYLabel } from "@rainbow-me/animated-charts";
-import { COLORS, FONTS } from '../constants';
+import { COLORS, FONTS, SIZES } from '../constants';
 import moment from 'moment';
 
 export const { width } = Dimensions.get('window');
@@ -24,18 +24,85 @@ const Chart = (props) => {
             y: e
         }
     }) : []
-
-    const points = monotoneCubicInterpolation({ data, range: 90 });
+    const points = monotoneCubicInterpolation({ data, range: 100 });
 
     const formatUSD = value => {
         "worklet";
+        if (value) {
+            if (value == "") {
+                return ""
+            } else {
+                let a = Number(value).toFixed(2)
+                return "$" + a + ''
+            }
+        } else {
+            return ""
+        }
 
-        if (value = "") { return "" }
-        return `$${Number(value).toFixed(2)}`
+    }
+    const formatDateTime = value => {
+        "worklet";
+        if (value) {
+            if (value == "") {
+                return ""
+            } else {
+                let selectedDate: Date = new Date(1000 * value);
+                let date = selectedDate.getDate()
+                let month = selectedDate.getMonth() + 1
+                // let selectedDate= moment()
+                console.log("l", `${date}/${month}`)
+                return `${date}/${month}`
+            }
+        } else {
+            return ""
+        }
+    }
+
+    function formatValue(value) {
+        if (value > 1e6) {
+            return `$${(value / 1e6).toFixed(2)}M`
+        } else if (value > 1e3) {
+            return `$${(value / 1e3).toFixed(2)}K`
+        } else {
+            return value
+        }
+    }
+    const creatingYAxisLabel = () => {
+        if (props?.data !== undefined) {
+            let min = Math.min(...props?.data)
+            let max = Math.max(...props?.data)
+
+            let mid = (min + max) / 2
+
+            let higherMid = (mid + max) / 2
+            let lowerMid = (min + mid) / 2;
+            // console.log(min, lowerMid, mid, higherMid, max)
+            return [
+                formatValue(max),
+                formatValue(higherMid),
+                formatValue(mid),
+                formatValue(lowerMid),
+                formatValue(min),
+            ]
+        } else {
+            return []
+        }
     }
     return (
-        <View>
-            <ChartPathProvider data={{ points, smoothingStrategy: 'bezier' }}>
+        <View style={{marginTop:20}}>
+            <View style={{
+                position: "absolute",
+                height: 220,
+                flexDirection: "column",
+                justifyContent: "space-between",
+            }}>
+                {
+                    creatingYAxisLabel().map((e,i) => (
+                        <Text style ={{...FONTS.h4, color:COLORS.lightGray3}} key={i}>{e}</Text>
+                    ))
+                }
+            </View>
+            <ChartPathProvider data={{ points, smoothingStrategy: 'bezier' }} >
                 <ChartPath height={200} stroke={COLORS.lightGreen} width={width} />
                 <ChartDot >
                     <View style={{
@@ -46,30 +113,37 @@ const Chart = (props) => {
                         alignItems: "center"
                     }}>
                         <View style={{
+                            justifyContent: "center",
+                            alignItems: "center",
                             width: 15,
                             height: 15,
                             borderRadius: 15,
                             backgroundColor: COLORS.white,
-                            justifyContent: "center",
-                            alignItems: "center"
                         }}>
                             <View style={{
                                 width: 10,
                                 height: 10,
                                 borderRadius: 10,
                                 backgroundColor: COLORS.lightGreen,
-                                justifyContent: "center",
-                                alignItems: "center"
+
                             }} />
                         </View>
+                        {/* Y label  */}
+                        <ChartYLabel
+                            format={formatUSD}
+                            style={{
+                                color: COLORS.white, fontFamily: "Roboto-Regular", fontSize: SIZES.body5,
+                            }} />
+
+                        {/* x label  */}
+                        <ChartXLabel
+                            format={formatDateTime}
+                            style={{
+                                color: COLORS.lightGray3, fontFamily: "Roboto-Regular", fontSize: SIZES.body5
+                            }} />
                     </View>
                 </ChartDot>
 
-                <ChartYLabel
-                    format={formatUSD}
-                    style={{
-                        color: COLORS.white, ...FONTS.body5
-                    }} />
 
             </ChartPathProvider>
         </View>

@@ -1,12 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import constants from "../constants/constants"
 
-export const callApi = createAsyncThunk("coins/markets", async () => {
-    console.log("loading api")
+export const coilList = createAsyncThunk("coins/markets", async (state, action, currency = "usd", orderBy = "market_cap_desc", perPage = "10", page = "1", sparkline = true, priceChangePerc = "7d") => {
 
+    let coinListUrl = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=${orderBy}&per_page=${perPage}&page=${page}&sparkline=${sparkline}&price_change_percentage=${priceChangePerc}`
     try {
-        const res = await axios.get(constants.holdingsUrl)
+        const res = await axios.get(coinListUrl)
         return res.data;
     } catch (error) {
         console.log("error", error)
@@ -18,7 +17,7 @@ export const callApi = createAsyncThunk("coins/markets", async () => {
 const initialState = {
     status: 'idle',
     error: null,
-    data: []
+    coinList: []
 }
 const coinSlice = createSlice({
     name: "coinList",
@@ -28,15 +27,16 @@ const coinSlice = createSlice({
     },
     extraReducers(builder) {
         builder
-            .addCase(callApi.pending, (state, action) => {
+            .addCase(coilList.pending, (state, action) => {
                 state.status = 'loading'
             })
-            .addCase(callApi.fulfilled, (state, action) => {
+            .addCase(coilList.fulfilled, (state, action) => {
                 state.status = 'succeeded'
                 // Add any fetched posts to the array
-                state.data = state.data.concat(action.payload)
+                console.log("action.payload",action.payload)
+                state.coinList = state.coinList.concat(action.payload)
             })
-            .addCase(callApi.rejected, (state, action) => {
+            .addCase(coilList.rejected, (state, action) => {
                 state.status = 'failed'
                 state.error = action.error.message
             })
