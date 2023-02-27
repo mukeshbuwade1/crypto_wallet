@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, Image } from 'react-native'
 import React from 'react'
 import { monotoneCubicInterpolation, ChartPath, ChartPathProvider, ChartDot, ChartXLabel, ChartYLabel } from "@rainbow-me/animated-charts";
 import { COLORS, FONTS, SIZES } from '../constants';
@@ -9,15 +9,7 @@ export const { width } = Dimensions.get('window');
 const Chart = (props) => {
     let date_unix = moment().subtract(7, "day").unix()
 
-    // const data = [
-    //     { x: 1453075200, y: 1.47 }, { x: 1453161600, y: 1.37 },
-    //     { x: 1453248000, y: 1.53 }, { x: 1453334400, y: 1.54 },
-    //     { x: 1453420800, y: 1.52 }, { x: 1453507200, y: 2.03 },
-    //     { x: 1453593600, y: 2.10 }, { x: 1453680000, y: 2.50 },
-    //     { x: 1453766400, y: 2.30 }, { x: 1453852800, y: 2.42 },
-    //     { x: 1453939200, y: 2.55 }, { x: 1454025600, y: 2.41 },
-    //     { x: 1454112000, y: 2.43 }, { x: 1454198400, y: 2.20 },
-    // ];
+
     let data = props?.data ? props.data.map((e, i) => {
         return {
             x: date_unix + (i + 1) * 3600,
@@ -49,8 +41,6 @@ const Chart = (props) => {
                 let selectedDate: Date = new Date(1000 * value);
                 let date = selectedDate.getDate()
                 let month = selectedDate.getMonth() + 1
-                // let selectedDate= moment()
-                console.log("l", `${date}/${month}`)
                 return `${date}/${month}`
             }
         } else {
@@ -64,7 +54,7 @@ const Chart = (props) => {
         } else if (value > 1e3) {
             return `$${(value / 1e3).toFixed(2)}K`
         } else {
-            return value
+            return  `$${Number(value).toFixed(2)}`
         }
     }
     const creatingYAxisLabel = () => {
@@ -76,7 +66,6 @@ const Chart = (props) => {
 
             let higherMid = (mid + max) / 2
             let lowerMid = (min + mid) / 2;
-            // console.log(min, lowerMid, mid, higherMid, max)
             return [
                 formatValue(max),
                 formatValue(higherMid),
@@ -89,7 +78,16 @@ const Chart = (props) => {
         }
     }
     return (
-        <View style={{marginTop:20}}>
+        <View style={{ marginTop: 20 }}>
+
+            <View
+                style={{
+                    display: props?.data ? "none" : "flex",
+                    position: "absolute",
+                    height: 220,
+                    backgroundColor: COLORS.transparentBlack1
+                }}
+            />
             <View style={{
                 position: "absolute",
                 height: 220,
@@ -97,10 +95,21 @@ const Chart = (props) => {
                 justifyContent: "space-between",
             }}>
                 {
-                    creatingYAxisLabel().map((e,i) => (
-                        <Text style ={{...FONTS.h4, color:COLORS.lightGray3}} key={i}>{e}</Text>
+                    creatingYAxisLabel().map((e, i) => (
+                        <Text style={{ ...FONTS.h4, color: COLORS.lightGray3 }} key={i}>{e}</Text>
                     ))
                 }
+                <Image source={{uri:props.image}}  alt='crypto image'
+                style={{
+                    width: 100,
+                    height: 100,
+                    resizeMode:"contain",
+                    position:"absolute",
+                    top:60,
+                    left:150,
+                    opacity:0.2
+                }}
+                />
             </View>
             <ChartPathProvider data={{ points, smoothingStrategy: 'bezier' }} >
                 <ChartPath height={200} stroke={COLORS.lightGreen} width={width} />

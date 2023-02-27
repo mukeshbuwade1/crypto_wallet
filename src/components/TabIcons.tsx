@@ -1,6 +1,6 @@
 import { Image, ImageProps, ImageSourcePropType, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import { COLORS, FONTS } from '../constants'
+import { COLORS, FONTS, icons } from '../constants'
 
 export type prop = {
   icon: ImageSourcePropType,
@@ -9,12 +9,13 @@ export type prop = {
 }
 
 const TabIcons: React.FC<prop> = ({ icon, focused, label }) => {
+  let size = ( icon ==icons.close)?15:25
   let color = (focused || label == "trade") ? COLORS.white : COLORS.lightGray3
   return (
     <View style={styles.iconContainer}>
       <Image source={icon} resizeMode={"contain"} style={{
-        width: 25,
-        height: 25,
+        width: size,
+        height: size,
         tintColor: color
       }} />
       <Text style={{

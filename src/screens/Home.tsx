@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -6,7 +6,8 @@ import {
     TouchableOpacity,
     Alert,
     StyleSheet,
-    Image
+    Image,
+    ScrollView
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import ButtonWithIcon from '../components/ButtonWithIcon';
@@ -47,7 +48,7 @@ const WalletView: React.FC<walletViewProps> = () => {
                     marginRight: 5
                 }} resizeMode={"contain"} />
                 <Text style={{ ...styles.tx, }}>-30.56%</Text>
-                <Text style={{ ...styles.tx, marginLeft: 10 }}>7d change</Text> 
+                <Text style={{ ...styles.tx, marginLeft: 10 }}>7d change</Text>
             </View>
 
             {/* button view  */}
@@ -65,14 +66,18 @@ const WalletView: React.FC<walletViewProps> = () => {
 const Home: React.FC<propType> = () => {
 
     const dispatch = useDispatch()
-    const { holdingList } = useSelector((s: rootState) => s)
-    // console.log("holdingList", holdingList)
+    const { coinList } = useSelector((s: rootState) => s)
+ 
+    const [chartIndex, setChartIndex] =useState(0)
+    // console.log("holdingList0", coinList[chartIndex]?.sparkline_in_7d?.price)
+    // console.log("holdingList1", coinList[chartIndex])
+    console.log("holdingList2", coinList.coinList)
     function getData() {
-        if (holdingList.status == "idle") {
+        if (coinList.status == "idle") {
             dispatch(myHoldingsApi())
         } else {
-            
-        }      
+
+        }
     }
 
 
@@ -81,25 +86,23 @@ const Home: React.FC<propType> = () => {
     }, [])
     return (
         <MainLayout>
+
             <View
-            // style={{ flexGrow: 1 }}
+            
             >
+           
                 {/* wallet information */}
 
                 <WalletView />
 
                 {/* chart */}
-                <Chart data={holdingList?.holdings[0]?.sparkline_in_7d?.price} />
+                <Chart data={coinList?.coinList[chartIndex]?.sparkline_in_7d?.price} image={coinList?.coinList[chartIndex]?.image} />
 
                 {/* coin data list */}
+                <CoinList chartIndex={chartIndex} setChartIndex={setChartIndex} />
 
-                <CoinList />
-
-
-                <View>
-                    <Text>Top Currency</Text>
-                </View>
             </View>
+
         </MainLayout>
     )
 }
