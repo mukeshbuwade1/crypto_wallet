@@ -14,6 +14,7 @@ import store from './src/redux/store';
 import TestComponent from './src/screens/TestComponent';
 import { useColorScheme } from 'react-native';
 import { darkTheme,lightTheme } from './src/theme/themeValues';
+import MainLayout from './src/components/MainLayout';
 const Stack = createStackNavigator();
 
 
@@ -33,7 +34,7 @@ const BaseNavigation = () => {
       >
         <Stack.Screen
           name="MainLayout"
-          component={TestComponent}
+          component={Tabs}
         />
       </Stack.Navigator>
     </NavigationContainer>
